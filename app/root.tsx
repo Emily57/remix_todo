@@ -22,16 +22,7 @@ import type {
 import appStylesHref from "./app.css?url";
 import { getTasks, createEmptyTask } from "./data";
 import { withEmotionCache } from "@emotion/react";
-import {
-  ChakraProvider,
-  extendTheme,
-  Alert,
-  AlertIcon,
-  Box,
-  Icon,
-} from "@chakra-ui/react";
-import { FaInfoCircle } from "react-icons/fa";
-import { keyframes } from "@emotion/react";
+import { ChakraProvider } from "@chakra-ui/react";
 
 import { ServerStyleContext, ClientStyleContext } from "./context";
 
@@ -52,18 +43,16 @@ const Document = withEmotionCache(
     const serverStyleData = useContext(ServerStyleContext);
     const clientStyleData = useContext(ClientStyleContext);
 
-    // Only executed on client
     useEffect(() => {
-      // re-link sheet container
       emotionCache.sheet.container = document.head;
-      // re-inject tags
       const tags = emotionCache.sheet.tags;
       emotionCache.sheet.flush();
       tags.forEach((tag) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (emotionCache.sheet as any)._insertTag(tag);
       });
-      // reset cache to reapply global styles
       clientStyleData?.reset();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -105,22 +94,6 @@ export const action = async () => {
   const task = await createEmptyTask();
   return redirect(`/tasks/${task.id}/edit`);
 };
-
-const colors = {
-  brand: {
-    900: "#1a365d",
-    800: "#153e75",
-    700: "#2a69ac",
-  },
-};
-
-const theme = extendTheme({ colors });
-
-const bounce = keyframes`
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-`;
 
 export default function App() {
   const { tasks, q } = useLoaderData<typeof loader>();
@@ -211,20 +184,6 @@ export default function App() {
                 navigation.state === "loading" && !searching ? "loading" : ""
               }
             >
-              <Box my={4}>
-                <Alert
-                  status="success"
-                  mt={4}
-                  animation={`${bounce} 1s infinite`}
-                >
-                  <AlertIcon />
-                  Hello, Chakra UI!!
-                </Alert>
-                <Alert status="info" mt={4}>
-                  <Icon as={FaInfoCircle} boxSize={6} mr={2} />
-                  This is an informational message ( ˙ㅂ˙)b
-                </Alert>
-              </Box>
               <Outlet />
             </div>
             <ScrollRestoration />

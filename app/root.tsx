@@ -1,12 +1,9 @@
 import React, { useContext, useEffect } from "react";
 import { json, redirect } from "@remix-run/node";
 import {
-  Form,
-  Link,
   Links,
   LiveReload,
   Meta,
-  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -25,6 +22,7 @@ import { withEmotionCache } from "@emotion/react";
 import { ChakraProvider } from "@chakra-ui/react";
 
 import { ServerStyleContext, ClientStyleContext } from "./context";
+import Sidebar from "./Sidebar";
 
 export const meta: MetaFunction = () => {
   return [
@@ -110,6 +108,12 @@ export default function App() {
     }
   }, [q]);
 
+  const formattedTasks = tasks.map((task) => ({
+    id: task.id,
+    name: task.name || "", // undefinedの場合は空文字列に変換
+    done: task.done ?? false, // undefinedの場合はfalseに変換
+  }));
+
   return (
     <Document>
       <ChakraProvider>
@@ -124,64 +128,12 @@ export default function App() {
             <Links />
           </head>
           <body>
-            <div id="sidebar">
-              <div className="home">
-                <Link to="/">
-                  <h1>Remix Tasks</h1>
-                </Link>
-              </div>
-              <div>
-                <Form
-                  id="search-form"
-                  onChange={(event) => {
-                    const isFirstSearch = q === null;
-                    submit(event.currentTarget, {
-                      replace: !isFirstSearch,
-                    });
-                  }}
-                  role="search"
-                >
-                  <input
-                    id="q"
-                    aria-label="Search tasks"
-                    className={searching ? "loading" : ""}
-                    defaultValue={q || ""}
-                    placeholder="Search"
-                    type="search"
-                    name="q"
-                  />
-                  <div id="search-spinner" aria-hidden hidden={!searching} />
-                </Form>
-                <Form method="post">
-                  <button type="submit">New</button>
-                </Form>
-              </div>
-              <nav>
-                {tasks.length ? (
-                  <ul>
-                    {tasks.map((task) => (
-                      <li key={task.id}>
-                        <NavLink
-                          className={({ isActive, isPending }) =>
-                            isActive ? "active" : isPending ? "pending" : ""
-                          }
-                          to={`tasks/${task.id}`}
-                        >
-                          <Link to={`tasks/${task.id}`}>
-                            {task.name ? <>{task.name}</> : <i>No Name</i>}{" "}
-                            {task.done ? <span>★</span> : null}
-                          </Link>
-                        </NavLink>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>
-                    <i>No tasks</i>
-                  </p>
-                )}
-              </nav>
-            </div>
+            <Sidebar
+              q={q}
+              searching={searching || false}
+              tasks={formattedTasks}
+              submit={submit}
+            />
             <div
               id="detail"
               className={

@@ -20,7 +20,6 @@ import appStylesHref from "./app.css?url";
 import { getTasks, createEmptyTask } from "./data";
 import { withEmotionCache } from "@emotion/react";
 import { ChakraProvider } from "@chakra-ui/react";
-
 import { ServerStyleContext, ClientStyleContext } from "./context";
 import Sidebar from "./Sidebar";
 

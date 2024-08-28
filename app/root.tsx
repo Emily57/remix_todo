@@ -20,7 +20,7 @@ import type {
   LoaderFunctionArgs,
 } from "@remix-run/node";
 import appStylesHref from "./app.css?url";
-import { getContacts, createEmptyContact } from "./data";
+import { getTasks, createEmptyTask } from "./data";
 import { withEmotionCache } from "@emotion/react";
 import {
   ChakraProvider,
@@ -97,13 +97,13 @@ export const links: LinksFunction = () => [
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
-  const contacts = await getContacts(q);
-  return json({ contacts, q });
+  const tasks = await getTasks(q);
+  return json({ tasks, q });
 };
 
 export const action = async () => {
-  const contact = await createEmptyContact();
-  return redirect(`/contacts/${contact.id}/edit`);
+  const task = await createEmptyTask();
+  return redirect(`/tasks/${task.id}/edit`);
 };
 
 const colors = {
@@ -123,7 +123,7 @@ const bounce = keyframes`
 `;
 
 export default function App() {
-  const { contacts, q } = useLoaderData<typeof loader>();
+  const { tasks, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const submit = useSubmit();
   const searching =
@@ -152,7 +152,7 @@ export default function App() {
           </head>
           <body>
             <div id="sidebar">
-              <h1>Remix Contacts</h1>
+              <h1>Remix Tasks</h1>
               <div>
                 <Form
                   id="search-form"
@@ -166,7 +166,7 @@ export default function App() {
                 >
                   <input
                     id="q"
-                    aria-label="Search contacts"
+                    aria-label="Search tasks"
                     className={searching ? "loading" : ""}
                     defaultValue={q || ""}
                     placeholder="Search"
@@ -180,25 +180,19 @@ export default function App() {
                 </Form>
               </div>
               <nav>
-                {contacts.length ? (
+                {tasks.length ? (
                   <ul>
-                    {contacts.map((contact) => (
-                      <li key={contact.id}>
+                    {tasks.map((task) => (
+                      <li key={task.id}>
                         <NavLink
                           className={({ isActive, isPending }) =>
                             isActive ? "active" : isPending ? "pending" : ""
                           }
-                          to={`contacts/${contact.id}`}
+                          to={`tasks/${task.id}`}
                         >
-                          <Link to={`contacts/${contact.id}`}>
-                            {contact.first || contact.last ? (
-                              <>
-                                {contact.first} {contact.last}
-                              </>
-                            ) : (
-                              <i>No Name</i>
-                            )}{" "}
-                            {contact.favorite ? <span>★</span> : null}
+                          <Link to={`tasks/${task.id}`}>
+                            {task.name ? <>{task.name}</> : <i>No Name</i>}{" "}
+                            {task.done ? <span>★</span> : null}
                           </Link>
                         </NavLink>
                       </li>
@@ -206,7 +200,7 @@ export default function App() {
                   </ul>
                 ) : (
                   <p>
-                    <i>No contacts</i>
+                    <i>No tasks</i>
                   </p>
                 )}
               </nav>

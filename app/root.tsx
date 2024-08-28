@@ -125,7 +125,11 @@ export default function App() {
           </head>
           <body>
             <div id="sidebar">
-              <h1>Remix Tasks</h1>
+              <div className="home">
+                <Link to="/">
+                  <h1>Remix Tasks</h1>
+                </Link>
+              </div>
               <div>
                 <Form
                   id="search-form"

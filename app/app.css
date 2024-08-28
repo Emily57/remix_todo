@@ -115,7 +115,7 @@ body {
   padding-right: 2rem;
 }
 
-#sidebar h1 {
+#sidebar .home {
   font-size: 1rem;
   font-weight: 500;
   display: flex;

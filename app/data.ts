@@ -95,11 +95,14 @@ export async function deleteTask(id: string) {
 [
   {
     id: 1,
-    name: "Shruti",
+    name: "日報を書く",
+    note: "今日の出来事を簡潔に書く",
   },
   {
     id: 2,
-    name: "alex-anderson",
+    name: "メールを送る",
+    note: "株式会社リミックス様に連絡をする",
+    done: true,
   },
 ].forEach((task) => {
   fakeTasks.create({

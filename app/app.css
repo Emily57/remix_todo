@@ -76,10 +76,6 @@ button:active {
 #task h1 form button[value="true"] {
   color: #a4a4a4;
 }
-#task h1 form button[value="true"]:hover,
-#task h1 form button[value="false"] {
-  color: #eeb004;
-}
 
 form[action$="destroy"] button {
   color: #f44250;
@@ -190,7 +186,6 @@ body {
 
 #sidebar nav a span {
   float: right;
-  color: #eeb004;
 }
 #sidebar nav a.active span {
   color: inherit;
@@ -265,11 +260,6 @@ i {
   transition-delay: 200ms;
 }
 
-#task {
-  max-width: 40rem;
-  display: flex;
-}
-
 #task h1 {
   font-size: 2rem;
   font-weight: 700;
@@ -317,7 +307,6 @@ i {
 
 #task-form {
   display: flex;
-  max-width: 40rem;
   flex-direction: column;
   gap: 1rem;
 }

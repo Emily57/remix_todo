@@ -1,3 +1,4 @@
+import { Checkbox } from "@chakra-ui/react";
 import React from "react";
 import { Link, NavLink, Form } from "react-router-dom";
 
@@ -39,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ q, searching, tasks, submit }) => {
           <div id="search-spinner" aria-hidden hidden={!searching} />
         </Form>
         <Form method="post">
-          <button type="submit">New</button>
+          <button type="submit">+</button>
         </Form>
       </div>
       <nav>
@@ -54,8 +55,12 @@ const Sidebar: React.FC<SidebarProps> = ({ q, searching, tasks, submit }) => {
                   to={`tasks/${task.id}`}
                 >
                   <Link to={`tasks/${task.id}`}>
+                    {task.done ? (
+                      <Checkbox isChecked={true} isReadOnly />
+                    ) : (
+                      <Checkbox isChecked={false} isReadOnly />
+                    )}
                     {task.name ? <>{task.name}</> : <i>No Name</i>}{" "}
-                    {task.done ? <span>★</span> : null}
                   </Link>
                 </NavLink>
               </li>

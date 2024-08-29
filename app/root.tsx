@@ -1,6 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { json, redirect } from "@remix-run/node";
 import {
+  Form,
+  Link,
   Links,
   LiveReload,
   Meta,
@@ -22,6 +24,7 @@ import { withEmotionCache } from "@emotion/react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { ServerStyleContext, ClientStyleContext } from "./context";
 import Sidebar from "./Sidebar";
+import { authenticator } from "~/services/auth.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -84,7 +87,20 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
   const tasks = await getTasks(q);
-  return json({ tasks, q });
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: any = await authenticator.authenticate("google", request);
+    const userName = `${result.name.givenName} ${result.name.familyName}`;
+    const isLoggedIn = !!result;
+    if (!isLoggedIn) {
+      return redirect("/");
+    }
+    return json({ isLoggedIn, userName, tasks, q });
+  } catch (error) {
+    console.error("Loader error:", error);
+    return json({ isLoggedIn: false, tasks, q, userName: "" });
+  }
 };
 
 export const action = async () => {
@@ -93,7 +109,7 @@ export const action = async () => {
 };
 
 export default function App() {
-  const { tasks, q } = useLoaderData<typeof loader>();
+  const { isLoggedIn, userName, tasks, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const submit = useSubmit();
   const searching =
@@ -132,14 +148,56 @@ export default function App() {
               searching={searching || false}
               tasks={formattedTasks}
               submit={submit}
+              isLoggedIn={isLoggedIn}
             />
             <div
-              id="detail"
-              className={
-                navigation.state === "loading" && !searching ? "loading" : ""
-              }
+              style={{
+                width: "100%",
+              }}
             >
-              <Outlet />
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "1rem",
+                  backgroundColor: "#f8f9fa",
+                  borderBottom: "1px solid #dee2e6",
+                  width: "100%",
+                }}
+              >
+                <h1>Remix todo</h1>
+                <div>
+                  {isLoggedIn ? (
+                    <>
+                      <span>Logged in as: {userName}</span>
+                      <Form
+                        method="post"
+                        action="/logout"
+                        style={{ display: "inline", marginLeft: "1rem" }}
+                      >
+                        <button type="submit">Logout</button>
+                      </Form>
+                    </>
+                  ) : (
+                    <Link to="/auth_google">Login with Google</Link>
+                  )}
+                </div>
+              </div>
+              {isLoggedIn ? (
+                <div
+                  id="detail"
+                  className={
+                    navigation.state === "loading" && !searching
+                      ? "loading"
+                      : ""
+                  }
+                >
+                  <Outlet />
+                </div>
+              ) : (
+                <p>ログインしてください</p>
+              )}
             </div>
             <ScrollRestoration />
             <Scripts />

@@ -7,9 +7,16 @@ interface SidebarProps {
   searching: boolean;
   tasks: { id: string; name: string; done: boolean }[];
   submit: (target: HTMLFormElement, options: { replace: boolean }) => void;
+  isLoggedIn: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ q, searching, tasks, submit }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  q,
+  searching,
+  tasks,
+  submit,
+  isLoggedIn,
+}) => {
   return (
     <div id="sidebar">
       <div className="home">
@@ -44,7 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ q, searching, tasks, submit }) => {
         </Form>
       </div>
       <nav>
-        {tasks.length ? (
+        {tasks.length && isLoggedIn ? (
           <ul>
             {tasks.map((task) => (
               <li key={task.id}>
